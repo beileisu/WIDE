@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            name="Sample Wizards"
+            id="WIDE">
+      </category>
+      <wizard
+            id="wide.wizards.SampleNewWizard"
+            name="Multi-page Editor file"
+            icon="icons/sample.png"
+            class="wide.wizards.SampleNewWizard"
+            category="WIDE">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="com.wide.preferences.WIDERootPreferencePage"
+            id="com.wide.preferences.WIDERootPreferencePage"
+            name="WIDE">
+      </page>
+      <page
+            category="com.wide.preferences.WIDERootPreferencePage"
+            class="com.wide.preferences.WIDEHostConfigurationPreferencePage"
+            id="com.wide.preferences.WIDEHostConfigurationPreferencePage"
+            name="Host Configuration">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.wide.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Sample Category"
+            id="WIDE">
+      </category>
+      <view
+            id="wide.views.SampleView"
+            name="Sample View"
+            icon="icons/sample.png"
+            class="wide.views.SampleView"
+            category="WIDE"
+            inject="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               id="wide.views.SampleView"
+               relative="org.eclipse.ui.views.ProblemView"
+               relationship="right"
+               ratio="0.5">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contexts.xml">
+      </contexts>
+   </extension>
+
+</plugin>
