@@ -11,5 +11,15 @@ public class PreferenceConstans {
 	
 	public static final String EDIT_CONNECTION = "Edit Connection";
 	
+    public static final String APPLICATION_HTTP_SERVER = "HTTPServer"; 
+    public static final String APPLICATION_WINDCHILL_METHOD_SERVER = "MethodServer"; 
+    public static final String APPLICATION_WINDCHILLDS = "WindchillDS"; 
 	
+    public static final String APPLICATION_TYPE_APACHE = "Apache"; 
+    public static final String APPLICATION_TYPE_WINDCHILL = "Windchill"; 
+    
+    public static final String SYSTEM_OS_WINDOWS = "Windows"; 
+    public static final String SYSTEM_OS_LINUX = "Linux"; 
+    
+    
 }

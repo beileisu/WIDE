@@ -12,7 +12,7 @@
             id="wide.wizards.SampleNewWizard"
             name="Multi-page Editor file"
             icon="icons/sample.png"
-            class="wide.wizards.SampleNewWizard"
+            class="com.wide.wizards.SampleNewWizard"
             category="WIDE">
       </wizard>
    </extension>
@@ -39,16 +39,16 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="Sample Category"
-            id="WIDE">
+            id="WIDE"
+            name="WIDE">
       </category>
       <view
-            id="wide.views.SampleView"
-            name="Sample View"
-            icon="icons/sample.png"
-            class="wide.views.SampleView"
             category="WIDE"
-            inject="true">
+            class="com.wide.views.ApplicationStatusView"
+            icon="icons/server.png"
+            id="com.wide.views.ApplicationStatusView"
+            name="Application Status"
+            restorable="true">
       </view>
    </extension>
    <extension

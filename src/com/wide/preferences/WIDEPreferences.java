@@ -2,7 +2,7 @@ package com.wide.preferences;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;import java.util.stream.Collector;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -45,8 +45,8 @@ public final class WIDEPreferences {
     };
 
     protected static final String[] HOST_OS_ITEMS = { 
-            "Windows", 
-            "Linux" 
+            PreferenceConstans.SYSTEM_OS_WINDOWS, 
+            PreferenceConstans.SYSTEM_OS_LINUX 
     };
 
     protected static final String[] variableTableColumnProperties = { 
@@ -55,7 +55,7 @@ public final class WIDEPreferences {
             PreferenceConstans.CONFIG_HOST_OS 
     };
     
-    protected static List<HostConfigurationSettings> getHostConfigurationSettings(IPreferenceStore store) {
+    public static List<HostConfigurationSettings> getHostConfigurationSettings(IPreferenceStore store) {
 
         List<HostConfigurationSettings> settings = Lists.newArrayList();
         
@@ -81,14 +81,14 @@ public final class WIDEPreferences {
         return settings;
     }
     
-    protected static void saveHostConfigurationSettings(IPreferenceStore store, List<HostConfigurationSettings> settings) {
+    public static void saveHostConfigurationSettings(IPreferenceStore store, List<HostConfigurationSettings> settings) {
         
         settings = settings.stream().distinct().collect(Collectors.toList());
         
         saveSettingsOp(store, settings);
     }
     
-    protected static void saveHostConfigurationSettings(IPreferenceStore store, HostConfigurationSettings setting) {
+    public static void saveHostConfigurationSettings(IPreferenceStore store, HostConfigurationSettings setting) {
         
         List<HostConfigurationSettings> settings = getHostConfigurationSettings(store);
         settings.add(setting);
@@ -97,7 +97,7 @@ public final class WIDEPreferences {
         saveSettingsOp(store, settings);
     }
     
-    protected static void saveSettingsOp(IPreferenceStore store, List<HostConfigurationSettings> settings) {
+    public static void saveSettingsOp(IPreferenceStore store, List<HostConfigurationSettings> settings) {
         JsonArray jsonArray = new JsonArray();
         settings.forEach(item -> {
             jsonArray.add(GSON.toJson(item));
@@ -117,7 +117,7 @@ public final class WIDEPreferences {
     }
         
     
-    protected static void removeHostConfigurationSettings(IPreferenceStore store, List<HostConfigurationSettings> removeSettings) {
+    public static void removeHostConfigurationSettings(IPreferenceStore store, List<HostConfigurationSettings> removeSettings) {
         List<HostConfigurationSettings> settings = getHostConfigurationSettings(store);
         settings.removeAll(removeSettings);
         

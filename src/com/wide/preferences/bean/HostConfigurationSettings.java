@@ -1,5 +1,10 @@
 package com.wide.preferences.bean;
 
+import java.util.List;
+
+import com.google.common.collect.Lists;
+import com.wide.preferences.constans.PreferenceConstans;
+
 public class HostConfigurationSettings {
 
     private String windchillHost;
@@ -9,10 +14,12 @@ public class HostConfigurationSettings {
     private String windchillAdmin;
     private String windchillAdminPassword;
     private String windchillVersion;
-    private String HttpServerHome;
+    private String httpServerHome;
     private String windchillHome;
     private String windchillDSHome;
 
+    private List<SettingApplication> children = Lists.newArrayList();
+    
     public HostConfigurationSettings() {
     }
 
@@ -25,9 +32,31 @@ public class HostConfigurationSettings {
         this.windchillAdmin = windchillAdmin;
         this.windchillAdminPassword = windchillAdminPassword;
         this.windchillVersion = windchillVersion;
-        HttpServerHome = httpServerHome;
+        this.httpServerHome = httpServerHome;
         this.windchillHome = windchillHome;
         this.windchillDSHome = windchillDSHome;
+        
+        SettingApplication httpServer = new SettingApplication();
+        httpServer.setName(PreferenceConstans.APPLICATION_HTTP_SERVER);
+        httpServer.setHomePath(httpServerHome);
+        httpServer.setApplication(PreferenceConstans.APPLICATION_TYPE_APACHE);
+        httpServer.setHostIp(windchillHost);
+        children.add(httpServer);
+        
+        SettingApplication windchill = new SettingApplication();
+        windchill.setName(PreferenceConstans.APPLICATION_WINDCHILL_METHOD_SERVER);
+        windchill.setHomePath(windchillHome);
+        windchill.setApplication(PreferenceConstans.APPLICATION_TYPE_WINDCHILL);
+        windchill.setHostIp(windchillHost);
+        children.add(windchill);
+        
+        SettingApplication windchillDS = new SettingApplication();
+        windchillDS.setName(PreferenceConstans.APPLICATION_WINDCHILLDS);
+        windchillDS.setHomePath(windchillDSHome);
+        windchillDS.setApplication(PreferenceConstans.APPLICATION_TYPE_WINDCHILL);
+        windchillDS.setHostIp(windchillHost);
+        children.add(windchillDS);
+        
     }
 
     public String getWindchillHost() {
@@ -87,11 +116,11 @@ public class HostConfigurationSettings {
     }
 
     public String getHttpServerHome() {
-        return HttpServerHome;
+        return httpServerHome;
     }
 
     public void setHttpServerHome(String httpServerHome) {
-        HttpServerHome = httpServerHome;
+        this.httpServerHome = httpServerHome;
     }
 
     public String getWindchillHome() {
@@ -108,6 +137,14 @@ public class HostConfigurationSettings {
 
     public void setWindchillDSHome(String windchillDSHome) {
         this.windchillDSHome = windchillDSHome;
+    }
+
+    public List<SettingApplication> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<SettingApplication> children) {
+        this.children = children;
     }
 
     @Override
@@ -152,4 +189,59 @@ public class HostConfigurationSettings {
         return "HostConfigurationBean [windchillHost=" + windchillHost + ", windchillHostOS=" + windchillHostOS + ", windchillVersion=" + windchillVersion + "]";
     }
 
+    public class SettingApplication{
+        
+        private String name;
+        private String homePath;
+        private String application;
+
+        private String hostIp;
+        
+        public SettingApplication() {
+        }
+
+        public SettingApplication(String name, String homePath) {
+            this.name = name;
+            this.homePath = homePath;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getHomePath() {
+            return homePath;
+        }
+
+        public void setHomePath(String homePath) {
+            this.homePath = homePath;
+        }
+
+        public String getApplication() {
+            return application;
+        }
+
+        public void setApplication(String application) {
+            this.application = application;
+        }
+
+        public String getHostIp() {
+            return hostIp;
+        }
+
+        public void setHostIp(String hostIp) {
+            this.hostIp = hostIp;
+        }
+
+        @Override
+        public String toString() {
+            return "SettingApplication [name=" + name + ", homePath=" + homePath + "]";
+        }
+
+    }
+    
 }

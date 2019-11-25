@@ -37,7 +37,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.internal.WorkbenchPlugin;
 
-import com.google.common.collect.Lists;
 import com.wide.internal.core.IInternalWIDECoreConstants;
 import com.wide.internal.ui.MultipleInputDialog;
 import com.wide.internal.ui.SWTFactory;
@@ -136,6 +135,7 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
                 handleRemoveButtonPressed();
             }
         });
+        
         envRemoveButton.setEnabled(false);
     }
 
