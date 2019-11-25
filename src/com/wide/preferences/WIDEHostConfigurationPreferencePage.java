@@ -1,41 +1,29 @@
 package com.wide.preferences;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.variables.IStringVariableManager;
-import org.eclipse.core.variables.IValueVariable;
-import org.eclipse.core.variables.VariablesPlugin;
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -43,18 +31,17 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.internal.WorkbenchPlugin;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-import com.google.gson.Gson;
+import com.google.common.collect.Lists;
 import com.wide.internal.core.IInternalWIDECoreConstants;
 import com.wide.internal.ui.MultipleInputDialog;
 import com.wide.internal.ui.SWTFactory;
+import com.wide.preferences.bean.HostConfigurationSettings;
 import com.wide.preferences.constans.PreferenceConstans;
 import com.wide.ui.WIDEUIPlugin;
 
@@ -82,9 +69,9 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
     protected Button envEditButton;
     protected Button envRemoveButton;
 
-    protected SimpleVariableContentProvider variableContentProvider = new SimpleVariableContentProvider();
-
-
+    protected TableViewerLabelProvider labelProvider = new TableViewerLabelProvider();
+    protected TableViewerContentProvider contentProvider = new TableViewerContentProvider();
+    
     public WIDEHostConfigurationPreferencePage() {
         setPreferenceStore(WorkbenchPlugin.getDefault().getPreferenceStore());
         setDescription("A demonstration of a preference page implementation");
@@ -156,14 +143,14 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
         boolean done = false;
 
         while (!done) {
-            MultipleInputDialog dialog = new MultipleInputDialog(getShell(), PreferenceConstans.EDIT_CONNECTION);
+            MultipleInputDialog dialog = new MultipleInputDialog(getShell(), PreferenceConstans.NEW_CONNECTION);
             dialog.addTextField(WINDCHILL_HOST_LABEL, IInternalWIDECoreConstants.EMPTY_STRING, false);
             dialog.addTextField(HOST_USER_LABEL, IInternalWIDECoreConstants.EMPTY_STRING, false);
             dialog.addTextField(HOST_PASSWORD_LABEL, IInternalWIDECoreConstants.EMPTY_STRING, false);
-            dialog.addComboxField(WINDCHILL_HOST_OS, IInternalWIDECoreConstants.EMPTY_STRING, false, WIDEPreferences.systemTypeItems);
+            dialog.addComboxField(WINDCHILL_HOST_OS, IInternalWIDECoreConstants.EMPTY_STRING, false, WIDEPreferences.HOST_OS_ITEMS);
             dialog.addTextField(WINDCHILL_ADMIN, IInternalWIDECoreConstants.EMPTY_STRING, false);
             dialog.addTextField(WINDCHILL_ADMIN_PASSWORD, IInternalWIDECoreConstants.EMPTY_STRING, false);
-            dialog.addComboxField(WINDCHILL_VERSION, IInternalWIDECoreConstants.EMPTY_STRING, false, WIDEPreferences.windchillVersionItems);
+            dialog.addComboxField(WINDCHILL_VERSION, IInternalWIDECoreConstants.EMPTY_STRING, false, WIDEPreferences.WINDCHILL_VERSION_ITEMS);
             dialog.addTextField(HTTP_SERVER_HOME, IInternalWIDECoreConstants.EMPTY_STRING, false);
             dialog.addTextField(WINDCHILL_HOME, IInternalWIDECoreConstants.EMPTY_STRING, false);
             dialog.addTextField(WINDCHILLDS_HOME, IInternalWIDECoreConstants.EMPTY_STRING, false);
@@ -182,92 +169,13 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
                 String windchillHome = StringUtils.trimToEmpty(dialog.getStringValue(WINDCHILL_HOME));
                 String windchillDSHome = StringUtils.trimToEmpty(dialog.getStringValue(WINDCHILLDS_HOME));
 
-                VariableWrapper wrapper = new VariableWrapper(windchillHost, hostUser, hostUserPassword, windchillHostOS, windchillAdmin, windchillAdminPassword, windchillVersion, httpServerHome,
+                HostConfigurationSettings setting = new HostConfigurationSettings(windchillHost, hostUser, hostUserPassword, windchillHostOS, windchillAdmin, windchillAdminPassword, windchillVersion, httpServerHome,
                         windchillHome, windchillDSHome);
 
-                done = addVariable(wrapper);
+                done = addHostConfigurationSettings(setting);
+                
             }
         }
-    }
-
-    /**
-     * Attempts to create and add a new variable with the given properties. Returns
-     * whether the operation completed successfully (either the variable was added
-     * successfully, or the user cancelled the operation). Returns false if the name
-     * is null or the user chooses not to overwrite an existing variable.
-     *
-     * @param name        name of the variable, cannot be <code>null</code> or
-     *                    empty.
-     * @param description description of the variable or <code>null</code>
-     * @param value       value of the variable or <code>null</code>
-     * @return whether the operation completed successfully
-     */
-    private boolean addVariable(VariableWrapper wrapper) {
-        if (wrapper == null) {
-            MessageDialog.openError(getShell(), "DebugPreferencesMessages.StringVariablePreferencePage_21", "DebugPreferencesMessages.StringVariablePreferencePage_20");
-            return false;
-        }
-
-        String windchillHost = StringUtils.trimToEmpty(wrapper.getfWindchillHost());
-        String hostUser = StringUtils.trimToEmpty(wrapper.getfHostUser());
-        String hostUserPassword = StringUtils.trimToEmpty(wrapper.getfHostUserPassword());
-        String windchillHostOS = StringUtils.trimToEmpty(wrapper.getfWindchillHostOS());
-        String windchillAdmin = StringUtils.trimToEmpty(wrapper.getfWindchillAdmin());
-        String windchillAdminPassword = StringUtils.trimToEmpty(wrapper.getfWindchillAdminPassword());
-        String windchillVersion = StringUtils.trimToEmpty(wrapper.getfWindchillVersion());
-        String httpServerHome = StringUtils.trimToEmpty(wrapper.getfHttpServerHome());
-        String windchillHome = StringUtils.trimToEmpty(wrapper.getfWindchillHome());
-        String windchillDSHome = StringUtils.trimToEmpty(wrapper.getfWindchillDSHome());
-
-        List<VariableWrapper> editedVariables = variableContentProvider.getWorkingSetVariables();
-        Iterator<VariableWrapper> iter = editedVariables.iterator();
-        while (iter.hasNext()) {
-            VariableWrapper currentVariable = iter.next();
-            if (!currentVariable.isRemoved()) {
-                String currentWindchillHost = currentVariable.getfWindchillHost();
-                String currentWindchillVersion = currentVariable.getfWindchillVersion();
-                String currentWindchillHostOS = currentVariable.getfWindchillHostOS();
-
-                boolean hostFlag = StringUtils.equals(currentWindchillHost, windchillHost);
-                boolean versionFlag = StringUtils.equals(currentWindchillVersion, windchillVersion);
-                boolean hostOSFlag = StringUtils.equals(currentWindchillHostOS, windchillHostOS);
-
-                if (hostFlag && versionFlag && hostOSFlag) {
-                    if (currentVariable.isReadOnly()) {
-                        MessageDialog.openError(getShell(), "DebugPreferencesMessages.StringVariablePreferencePage_23",
-                                MessageFormat.format("DebugPreferencesMessages.StringVariablePreferencePage_22", new Object[] { currentWindchillHost }));
-                        return false;
-                    } else {
-                        MessageDialog dialog = new MessageDialog(getShell(), "DebugPreferencesMessages.SimpleVariablePreferencePage_15", null,
-                                MessageFormat.format("DebugPreferencesMessages.SimpleVariablePreferencePage_16", new Object[] { currentWindchillHost }), MessageDialog.QUESTION,
-                                new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL }, 0);
-                        int overWrite = dialog.open();
-                        if (overWrite == 0) {
-                            currentVariable.setfHostUser(hostUser);
-                            currentVariable.setfHostUserPassword(hostUserPassword);
-                            currentVariable.setfWindchillAdmin(windchillAdmin);
-                            currentVariable.setfWindchillAdminPassword(windchillAdminPassword);
-                            currentVariable.setfHttpServerHome(httpServerHome);
-                            currentVariable.setfWindchillHome(windchillHome);
-                            currentVariable.setfWindchillDSHome(windchillDSHome);
-
-                            variableTable.update(currentVariable, null);
-                            return true;
-                        } else if (overWrite == 1) {
-                            return false;
-                        } else {
-                            return true; // Cancel was pressed, return true so operation is ended
-                        }
-                    }
-                }
-            }
-        }
-
-        VariableWrapper newVariable = new VariableWrapper(windchillHost, hostUser, hostUserPassword, windchillHostOS, windchillAdmin, windchillAdminPassword, windchillVersion, httpServerHome,
-                windchillHome, windchillDSHome);
-        variableContentProvider.addVariable(newVariable);
-        variableTable.refresh();
-        return true;
     }
 
     /**
@@ -296,9 +204,9 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
         table.setFont(font);
         gridData = new GridData(GridData.FILL_BOTH);
         variableTable.getControl().setLayoutData(gridData);
-        variableTable.setContentProvider(variableContentProvider);
         variableTable.setColumnProperties(WIDEPreferences.variableTableColumnProperties);
-        variableTable.addFilter(new VariableFilter());
+        variableTable.setContentProvider(contentProvider);
+        variableTable.setLabelProvider(labelProvider);
         variableTable.setComparator(new ViewerComparator() {
             @Override
             public int compare(Viewer iViewer, Object e1, Object e2) {
@@ -307,12 +215,8 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
                 } else if (e2 == null) {
                     return 1;
                 } else {
-
-                    int hostFlag = StringUtils.trimToEmpty(((VariableWrapper) e1).getfWindchillHost()).compareToIgnoreCase(StringUtils.trimToEmpty(((VariableWrapper) e2).getfWindchillHost()));
-                    int hostOSFlag = StringUtils.trimToEmpty(((VariableWrapper) e1).getfWindchillHostOS()).compareToIgnoreCase(StringUtils.trimToEmpty(((VariableWrapper) e2).getfWindchillHostOS()));
-                    int versionFlag = StringUtils.trimToEmpty(((VariableWrapper) e1).getfWindchillVersion()).compareToIgnoreCase(StringUtils.trimToEmpty(((VariableWrapper) e2).getfWindchillVersion()));
-
-                    return hostFlag + hostOSFlag + versionFlag;
+                    int flag = ((HostConfigurationSettings) e1).equals((HostConfigurationSettings) e2)?0:2;
+                    return flag;
                 }
             }
         });
@@ -353,9 +257,7 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
         if (!restoreColumnWidths()) {
             restoreDefaultColumnWidths();
         }
-
-        variableTable.setInput(getVariableManager());
-        variableTable.setLabelProvider(new SimpleVariableLabelProvider());
+        variableTable.setInput(getHostConfigurationSettings());
     }
 
     private void restoreDefaultColumnWidths() {
@@ -388,57 +290,41 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
      */
     private void handleRemoveButtonPressed() {
         IStructuredSelection selection = variableTable.getStructuredSelection();
-        List<VariableWrapper> variablesToRemove = selection.toList();
-        StringBuffer contributedVariablesToRemove = new StringBuffer();
-        Iterator<VariableWrapper> iter = variablesToRemove.iterator();
-        while (iter.hasNext()) {
-            VariableWrapper variable = iter.next();
-            if (variable.isContributed()) {
-                contributedVariablesToRemove.append('\t').append(variable.getfWindchillHost()).append('\n');
-            }
-        }
-        if (contributedVariablesToRemove.length() > 0) {
-            boolean remove = MessageDialog.openQuestion(getShell(), "DebugPreferencesMessages.SimpleLaunchVariablePreferencePage_21",
-                    MessageFormat.format("DebugPreferencesMessages.SimpleLaunchVariablePreferencePage_22", new Object[] { contributedVariablesToRemove.toString() })); //
-            if (!remove) {
-                return;
-            }
-        }
-        VariableWrapper[] variables = variablesToRemove.toArray(new VariableWrapper[0]);
-        for (int i = 0; i < variables.length; i++) {
-            variables[i].setRemoved(true);
-        }
+        List<HostConfigurationSettings> settingsToRemove = selection.toList();
+        IPreferenceStore store = WIDEUIPlugin.getDefault().getPreferenceStore();
+        WIDEPreferences.removeHostConfigurationSettings(store, settingsToRemove);
+        
         variableTable.refresh();
     }
 
     private void handleEditButtonPressed() {
         IStructuredSelection selection = variableTable.getStructuredSelection();
-        VariableWrapper variable = (VariableWrapper) selection.getFirstElement();
-        if (variable == null || variable.isReadOnly()) {
+        HostConfigurationSettings setting = (HostConfigurationSettings) selection.getFirstElement();
+        if (setting == null ) {
             return;
         }
 
-        String windchillHost = variable.getfWindchillHost();
-        String hostUser = variable.getfHostUser();
-        String hostUserPassword = variable.getfHostUserPassword();
-        String windchillHostOS = variable.getfWindchillHostOS();
-        String windchillAdmin = variable.getfWindchillAdmin();
-        String windchillAdminPassword = variable.getfWindchillAdminPassword();
-        String windchillVersion = variable.getfWindchillVersion();
-        String httpServerHome = variable.getfHttpServerHome();
-        String windchillHome = variable.getfWindchillHome();
-        String windchillDSHome = variable.getfWindchillDSHome();
+        String windchillHost = setting.getWindchillHost();
+        String hostUser = setting.getHostUser();
+        String hostUserPassword = setting.getHostUserPassword();
+        String windchillHostOS = setting.getWindchillHostOS();
+        String windchillAdmin = setting.getWindchillAdmin();
+        String windchillAdminPassword = setting.getWindchillAdminPassword();
+        String windchillVersion = setting.getWindchillVersion();
+        String httpServerHome = setting.getHttpServerHome();
+        String windchillHome = setting.getWindchillHome();
+        String windchillDSHome = setting.getWindchillDSHome();
 
-        MultipleInputDialog dialog = new MultipleInputDialog(getShell(), MessageFormat.format(PreferenceConstans.EDIT_VARIABLE, new Object[] { windchillHost }));
-        dialog.addTextField(HOST_USER_LABEL, IInternalWIDECoreConstants.EMPTY_STRING, false);
-        dialog.addTextField(HOST_PASSWORD_LABEL, IInternalWIDECoreConstants.EMPTY_STRING, false);
-        dialog.addComboxField(WINDCHILL_HOST_OS, IInternalWIDECoreConstants.EMPTY_STRING, false, WIDEPreferences.systemTypeItems);
-        dialog.addTextField(WINDCHILL_ADMIN, IInternalWIDECoreConstants.EMPTY_STRING, false);
-        dialog.addTextField(WINDCHILL_ADMIN_PASSWORD, IInternalWIDECoreConstants.EMPTY_STRING, false);
-        dialog.addComboxField(WINDCHILL_VERSION, IInternalWIDECoreConstants.EMPTY_STRING, false, WIDEPreferences.windchillVersionItems);
-        dialog.addTextField(HTTP_SERVER_HOME, IInternalWIDECoreConstants.EMPTY_STRING, false);
-        dialog.addTextField(WINDCHILL_HOME, IInternalWIDECoreConstants.EMPTY_STRING, false);
-        dialog.addTextField(WINDCHILLDS_HOME, IInternalWIDECoreConstants.EMPTY_STRING, false);
+        MultipleInputDialog dialog = new MultipleInputDialog(getShell(), MessageFormat.format(PreferenceConstans.EDIT_CONNECTION, new Object[] { windchillHost }));
+        dialog.addTextField(HOST_USER_LABEL, hostUser, false);
+        dialog.addTextField(HOST_PASSWORD_LABEL, hostUserPassword, false);
+        dialog.addComboxField(WINDCHILL_HOST_OS, windchillHostOS, false, WIDEPreferences.HOST_OS_ITEMS);
+        dialog.addTextField(WINDCHILL_ADMIN, windchillAdmin, false);
+        dialog.addTextField(WINDCHILL_ADMIN_PASSWORD, windchillAdminPassword, false);
+        dialog.addComboxField(WINDCHILL_VERSION, windchillVersion, false, WIDEPreferences.WINDCHILL_VERSION_ITEMS);
+        dialog.addTextField(HTTP_SERVER_HOME, httpServerHome, false);
+        dialog.addTextField(WINDCHILL_HOME, windchillHome, false);
+        dialog.addTextField(WINDCHILLDS_HOME, windchillDSHome, false);
 
         if (dialog.open() == Window.OK) {
             hostUser = StringUtils.trimToEmpty(dialog.getStringValue(HOST_USER_LABEL));
@@ -452,37 +338,37 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
             windchillDSHome = StringUtils.trimToEmpty(dialog.getStringValue(WINDCHILLDS_HOME));
 
             if (StringUtils.isNotEmpty(hostUser)) {
-                variable.setfHostUser(hostUser);
+                setting.setHostUser(hostUser);
             }
             if (StringUtils.isNotEmpty(hostUserPassword)) {
-                variable.setfHostUserPassword(hostUserPassword);
+                setting.setHostUserPassword(hostUserPassword);
             }
             if (StringUtils.isNotEmpty(hostUserPassword)) {
-                variable.setfHostUserPassword(hostUserPassword);
+                setting.setHostUserPassword(hostUserPassword);
             }
             if (StringUtils.isNotEmpty(windchillHostOS)) {
-                variable.setfWindchillHostOS(windchillHostOS);
+                setting.setWindchillHostOS(windchillHostOS);
             }
             if (StringUtils.isNotEmpty(windchillAdmin)) {
-                variable.setfWindchillAdmin(windchillAdmin);
+                setting.setWindchillAdmin(windchillAdmin);
             }
             if (StringUtils.isNotEmpty(windchillAdminPassword)) {
-                variable.setfWindchillAdminPassword(windchillAdminPassword);
+                setting.setWindchillAdminPassword(windchillAdminPassword);
             }
             if (StringUtils.isNotEmpty(windchillVersion)) {
-                variable.setfWindchillVersion(windchillVersion);
+                setting.setWindchillVersion(windchillVersion);
             }
             if (StringUtils.isNotEmpty(httpServerHome)) {
-                variable.setfHttpServerHome(httpServerHome);
+                setting.setHttpServerHome(httpServerHome);
             }
             if (StringUtils.isNotEmpty(windchillHome)) {
-                variable.setfWindchillHome(windchillHome);
+                setting.setWindchillHome(windchillHome);
             }
             if (StringUtils.isNotEmpty(windchillDSHome)) {
-                variable.setfWindchillDSHome(windchillDSHome);
+                setting.setWindchillDSHome(windchillDSHome);
             }
 
-            variableTable.update(variable, null);
+            variableTable.update(setting, null);
         }
     }
 
@@ -493,8 +379,8 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
      */
     protected void handleTableSelectionChanged(SelectionChangedEvent event) {
         IStructuredSelection selection = (event.getStructuredSelection());
-        VariableWrapper variable = (VariableWrapper) selection.getFirstElement();
-        if (variable == null || variable.isReadOnly()) {
+        HostConfigurationSettings variable = (HostConfigurationSettings) selection.getFirstElement();
+        if (variable == null) {
             envEditButton.setEnabled(false);
             envRemoveButton.setEnabled(false);
         } else {
@@ -517,7 +403,6 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
      */
     @Override
     protected void performDefaults() {
-        variableContentProvider.init();
         variableTable.refresh();
         super.performDefaults();
     }
@@ -527,7 +412,6 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
      */
     @Override
     public boolean performOk() {
-        variableContentProvider.saveChanges();
         saveColumnWidths();
         return super.performOk();
     }
@@ -548,21 +432,45 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
      * 
      * @return the singleton instance of the simple variable registry.
      */
-    private IStringVariableManager getVariableManager() {
+    private Object[] getHostConfigurationSettings() {
 
         IPreferenceStore store = WIDEUIPlugin.getDefault().getPreferenceStore();
-
-        if (store instanceof ScopedPreferenceStore) {
-            ScopedPreferenceStore store2 = (ScopedPreferenceStore) store;
-
-            System.out.println("Store:" + store2.getString("AAAA"));
-
-        }
-
-        return VariablesPlugin.getDefault().getStringVariableManager();
+        List<HostConfigurationSettings> settings = WIDEPreferences.getHostConfigurationSettings(store);
+        
+        return settings.toArray();
     }
 
-    private class SimpleVariableLabelProvider extends LabelProvider implements ITableLabelProvider, IColorProvider {
+    private boolean addHostConfigurationSettings(HostConfigurationSettings setting) {
+        IPreferenceStore store = WIDEUIPlugin.getDefault().getPreferenceStore();
+
+        WIDEPreferences.saveHostConfigurationSettings(store, setting);
+        variableTable.refresh();
+        return true;
+
+    }
+    
+    class TableViewerLabelProvider implements ITableLabelProvider{
+
+        @Override
+        public void addListener(ILabelProviderListener listener) {
+            
+        }
+
+        @Override
+        public void dispose() {
+            
+        }
+
+        @Override
+        public boolean isLabelProperty(Object element, String property) {
+            return false;
+        }
+
+        @Override
+        public void removeListener(ILabelProviderListener listener) {
+            
+        }
+
         @Override
         public Image getColumnImage(Object element, int columnIndex) {
             return null;
@@ -570,323 +478,40 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
 
         @Override
         public String getColumnText(Object element, int columnIndex) {
-            if (element instanceof VariableWrapper) {
-                VariableWrapper variable = (VariableWrapper) element;
-                switch (columnIndex) {
-                case 0:
-                    StringBuffer windchillHost = new StringBuffer();
-                    windchillHost.append(StringUtils.trimToEmpty(variable.getfWindchillHost()));
-                    if (variable.isReadOnly()) {
-                        // name.append(DebugPreferencesMessages.StringVariablePreferencePage_26);
-                        windchillHost.append("");
-                    }
-                    return windchillHost.toString();
-                case 1:
-                    String windchillVersion = variable.getfWindchillVersion();
-                    if (windchillVersion == null) {
-                        windchillVersion = IInternalWIDECoreConstants.EMPTY_STRING;
-                    }
-                    return windchillVersion;
-                case 2:
-                    String windchillHostOS = variable.getfWindchillHostOS();
-                    if (windchillHostOS == null) {
-                        windchillHostOS = IInternalWIDECoreConstants.EMPTY_STRING;
-                    }
-                    return windchillHostOS;
-                default:
-                    break;
-
-                }
+            
+            String columnValue = "";
+            
+            HostConfigurationSettings settings = (HostConfigurationSettings) element;
+    
+            switch (columnIndex) {
+            case 0:
+                columnValue = settings.getWindchillHost();
+                break;
+            case 1:
+                columnValue = settings.getWindchillVersion();
+                break;
+            case 2:
+                columnValue = settings.getWindchillHostOS();
+                break;
+            default:
+                break;
             }
-            return null;
-        }
+            
+            return columnValue;
 
-        @Override
-        public Color getForeground(Object element) {
-            if (element instanceof VariableWrapper) {
-                if (((VariableWrapper) element).isReadOnly()) {
-                    Display display = Display.getCurrent();
-                    return display.getSystemColor(SWT.COLOR_INFO_FOREGROUND);
-                }
-            }
-            return null;
         }
-
-        @Override
-        public Color getBackground(Object element) {
-            if (element instanceof VariableWrapper) {
-                if (((VariableWrapper) element).isReadOnly()) {
-                    Display display = Display.getCurrent();
-                    return display.getSystemColor(SWT.COLOR_INFO_BACKGROUND);
-                }
-            }
-            return null;
-        }
+        
     }
-
-    private class SimpleVariableContentProvider implements IStructuredContentProvider {
-        /**
-         * The content provider stores variable wrappers for use during editing.
-         */
-        private List<VariableWrapper> fWorkingSet = new ArrayList<>();
+    
+    class TableViewerContentProvider implements IStructuredContentProvider {
 
         @Override
         public Object[] getElements(Object inputElement) {
-            return fWorkingSet.toArray();
+            
+            return getHostConfigurationSettings();
         }
-
-        /**
-         * Adds the given variable to the 'wrappers'
-         *
-         * @param variable variable to add
-         */
-        public void addVariable(VariableWrapper variable) {
-            fWorkingSet.add(variable);
-        }
-
-        @Override
-        public void dispose() {
-        }
-
-        @Override
-        public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-            if (newInput == null || !(newInput instanceof IStringVariableManager)) {
-                return;
-            }
-            init();
-        }
-
-        /**
-         * Saves the edited variable state to the variable manager.
-         */
-        public void saveChanges() {
-            IStringVariableManager manager = getVariableManager();
-            Iterator<VariableWrapper> iterator = fWorkingSet.iterator();
-            List<IValueVariable> remove = new ArrayList<>();
-            List<IValueVariable> add = new ArrayList<>();
-            while (iterator.hasNext()) {
-                VariableWrapper variable = iterator.next();
-
-                String name = variable.getfWindchillHost();
-                String description = variable.getfWindchillVersion();
-                String value = "";
-                if (name != null && description != null) {
-                    value = new Gson().toJson(variable);
-                }
-
-                if (!variable.isReadOnly()) {
-                    IValueVariable underlyingVariable = variable.getUnderlyingVariable();
-                    if (variable.isRemoved()) {
-                        if (underlyingVariable != null) {
-                            // if added and removed there is no underlying variable
-                            remove.add(underlyingVariable);
-                        }
-                    } else if (variable.isAdded()) {
-                        IValueVariable vv = manager.newValueVariable(name, description);
-                        vv.setValue(value);
-                        add.add(vv);
-                    } else if (variable.isChanged()) {
-                        underlyingVariable.setValue(name);
-                        underlyingVariable.setDescription(description);
-                    }
-                }
-            }
-            // remove
-            if (!remove.isEmpty()) {
-                manager.removeVariables(remove.toArray(new IValueVariable[remove.size()]));
-            }
-            // add
-            if (!add.isEmpty()) {
-                try {
-                    manager.addVariables(add.toArray(new IValueVariable[add.size()]));
-                } catch (CoreException e) {
-                    WIDEUIPlugin.errorDialog(getShell(), "", "", e.getStatus()); //
-                }
-            }
-        }
-
-        /**
-         * Re-initializes to the variables currently stored in the manager.
-         */
-        public void init() {
-            fWorkingSet.clear();
-            IStringVariableManager manager = getVariableManager();
-            IValueVariable[] variables = manager.getValueVariables();
-            for (int i = 0; i < variables.length; i++) {
-                fWorkingSet.add(new VariableWrapper(variables[i]));
-            }
-        }
-
-        /**
-         * Returns the 'working set' of variables
-         *
-         * @return the working set of variables (not yet saved)
-         */
-        public List<VariableWrapper> getWorkingSetVariables() {
-            return fWorkingSet;
-        }
-
+        
     }
-
-    class VariableWrapper {
-
-        protected IValueVariable fVariable;
-
-        protected String fWindchillHost = null;
-        protected String fHostUser = null;
-        protected String fHostUserPassword = null;
-        protected String fWindchillHostOS = null;
-        protected String fWindchillAdmin = null;
-        protected String fWindchillAdminPassword = null;
-        protected String fWindchillVersion = null;
-        protected String fHttpServerHome = null;
-        protected String fWindchillHome = null;
-        protected String fWindchillDSHome = null;
-
-        boolean fRemoved = false;
-        boolean fAdded = false;
-
-        public VariableWrapper(IValueVariable variable) {
-            fVariable = variable;
-        }
-
-        public VariableWrapper(String windchillHost, String hostUser, String hostUserPassword, String hostOS, String windchillAdmin, String windchillAdminPassword, String windchillVersion,
-                String httpServerHome, String windchillHome, String windchillDSHome) {
-            fWindchillHost = windchillHost;
-            fHostUser = hostUser;
-            fHostUserPassword = hostUserPassword;
-            fWindchillHostOS = hostOS;
-            fWindchillAdmin = windchillAdmin;
-            fWindchillAdminPassword = windchillAdminPassword;
-            fWindchillVersion = windchillVersion;
-            fHttpServerHome = httpServerHome;
-            fWindchillHome = windchillHome;
-            fWindchillDSHome = windchillDSHome;
-            fAdded = true;
-        }
-
-        public boolean isAdded() {
-            return fAdded;
-        }
-
-        public String getfWindchillHost() {
-            return fWindchillHost;
-        }
-
-        public void setfWindchillHost(String fWindchillHost) {
-            this.fWindchillHost = fWindchillHost;
-        }
-
-        public String getfHostUser() {
-            return fHostUser;
-        }
-
-        public void setfHostUser(String fHostUser) {
-            this.fHostUser = fHostUser;
-        }
-
-        public String getfHostUserPassword() {
-            return fHostUserPassword;
-        }
-
-        public void setfHostUserPassword(String fHostUserPassword) {
-            this.fHostUserPassword = fHostUserPassword;
-        }
-
-        public String getfWindchillHostOS() {
-            return fWindchillHostOS;
-        }
-
-        public void setfWindchillHostOS(String fWindchillHostOS) {
-            this.fWindchillHostOS = fWindchillHostOS;
-        }
-
-        public String getfWindchillAdmin() {
-            return fWindchillAdmin;
-        }
-
-        public void setfWindchillAdmin(String fWindchillAdmin) {
-            this.fWindchillAdmin = fWindchillAdmin;
-        }
-
-        public String getfWindchillAdminPassword() {
-            return fWindchillAdminPassword;
-        }
-
-        public void setfWindchillAdminPassword(String fWindchillAdminPassword) {
-            this.fWindchillAdminPassword = fWindchillAdminPassword;
-        }
-
-        public String getfWindchillVersion() {
-            return fWindchillVersion;
-        }
-
-        public void setfWindchillVersion(String fWindchillVersion) {
-            this.fWindchillVersion = fWindchillVersion;
-        }
-
-        public String getfHttpServerHome() {
-            return fHttpServerHome;
-        }
-
-        public void setfHttpServerHome(String fHttpServerHome) {
-            this.fHttpServerHome = fHttpServerHome;
-        }
-
-        public String getfWindchillHome() {
-            return fWindchillHome;
-        }
-
-        public void setfWindchillHome(String fWindchillHome) {
-            this.fWindchillHome = fWindchillHome;
-        }
-
-        public String getfWindchillDSHome() {
-            return fWindchillDSHome;
-        }
-
-        public void setfWindchillDSHome(String fWindchillDSHome) {
-            this.fWindchillDSHome = fWindchillDSHome;
-        }
-
-        public boolean isChanged() {
-            return !fAdded && !fRemoved && (fWindchillVersion != null || fWindchillHostOS != null);
-        }
-
-        public boolean isReadOnly() {
-            if (fVariable == null) {
-                return false;
-            }
-            return fVariable.isReadOnly();
-        }
-
-        public boolean isContributed() {
-            if (fVariable == null) {
-                return false;
-            }
-            return fVariable.isContributed();
-        }
-
-        public IValueVariable getUnderlyingVariable() {
-            return fVariable;
-        }
-
-        public boolean isRemoved() {
-            return fRemoved;
-        }
-
-        public void setRemoved(boolean removed) {
-            fRemoved = removed;
-        }
-    }
-
-    class VariableFilter extends ViewerFilter {
-
-        @Override
-        public boolean select(Viewer viewer, Object parentElement, Object element) {
-            return !((VariableWrapper) element).isRemoved();
-        }
-
-    }
+    
 
 }

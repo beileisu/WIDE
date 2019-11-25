@@ -111,6 +111,43 @@ public class HostConfigurationSettings {
     }
 
     @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((windchillHost == null) ? 0 : windchillHost.hashCode());
+        result = prime * result + ((windchillHostOS == null) ? 0 : windchillHostOS.hashCode());
+        result = prime * result + ((windchillVersion == null) ? 0 : windchillVersion.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        HostConfigurationSettings other = (HostConfigurationSettings) obj;
+        if (windchillHost == null) {
+            if (other.windchillHost != null)
+                return false;
+        } else if (!windchillHost.equals(other.windchillHost))
+            return false;
+        if (windchillHostOS == null) {
+            if (other.windchillHostOS != null)
+                return false;
+        } else if (!windchillHostOS.equals(other.windchillHostOS))
+            return false;
+        if (windchillVersion == null) {
+            if (other.windchillVersion != null)
+                return false;
+        } else if (!windchillVersion.equals(other.windchillVersion))
+            return false;
+        return true;
+    }
+
+    @Override
     public String toString() {
         return "HostConfigurationBean [windchillHost=" + windchillHost + ", windchillHostOS=" + windchillHostOS + ", windchillVersion=" + windchillVersion + "]";
     }

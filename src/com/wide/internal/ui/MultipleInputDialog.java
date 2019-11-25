@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -26,6 +27,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.google.common.collect.Lists;
 import com.wide.internal.core.IInternalWIDECoreConstants;
 import com.wide.ui.StringVariableSelectionDialog;
 
@@ -397,7 +399,17 @@ public class MultipleInputDialog extends Dialog {
         if (items != null) {
             combo.setItems(items);
         }
-
+        
+        if(StringUtils.isEmpty(initialValue)) {
+            combo.select(0);
+        }else {
+            List<String> itemList = Lists.newArrayList(items);
+            int index = itemList.indexOf(initialValue);
+            if(index >= 0) {
+                combo.select(index);
+            }
+        }
+        
         if (!allowEmpty) {
             validators.add(new Validator() {
                 @Override
