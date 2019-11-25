@@ -1,6 +1,6 @@
 package com.wide.preferences.bean;
 
-public class HostConfigurationBean {
+public class HostConfigurationSettings {
 
     private String windchillHost;
     private String hostUser;
@@ -13,10 +13,10 @@ public class HostConfigurationBean {
     private String windchillHome;
     private String windchillDSHome;
 
-    public HostConfigurationBean() {
+    public HostConfigurationSettings() {
     }
 
-    public HostConfigurationBean(String windchillHost, String hostUser, String hostUserPassword, String windchillHostOS, String windchillAdmin, String windchillAdminPassword, String windchillVersion,
+    public HostConfigurationSettings(String windchillHost, String hostUser, String hostUserPassword, String windchillHostOS, String windchillAdmin, String windchillAdminPassword, String windchillVersion,
             String httpServerHome, String windchillHome, String windchillDSHome) {
         this.windchillHost = windchillHost;
         this.hostUser = hostUser;

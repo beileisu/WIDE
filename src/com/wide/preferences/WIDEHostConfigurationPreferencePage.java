@@ -14,8 +14,6 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.viewers.ColumnLayoutData;
-import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -34,6 +32,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -85,20 +84,6 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
 
     protected SimpleVariableContentProvider variableContentProvider = new SimpleVariableContentProvider();
 
-    protected static String[] variableTableColumnProperties = { "variable", //$NON-NLS-1$
-            "value", //$NON-NLS-1$
-            "description" //$NON-NLS-1$
-    };
-
-    protected static String[] windchillVersionItems = { "Windchill 10.2", //$NON-NLS-1$
-            "Windchill 11.1" };
-
-    protected static String[] systemTypeItems = { "Winddows", //$NON-NLS-1$
-            "Linux" };
-
-    protected String[] variableTableColumnHeaders = { PreferenceConstans.CONFIG_HOST_NAME, PreferenceConstans.CONFIG_WINDCHILL_VERSION, PreferenceConstans.CONFIG_SYSTEM_TYPE };
-
-    protected ColumnLayoutData[] variableTableColumnLayouts = { new ColumnWeightData(45), new ColumnWeightData(30), new ColumnWeightData(25) };
 
     public WIDEHostConfigurationPreferencePage() {
         setPreferenceStore(WorkbenchPlugin.getDefault().getPreferenceStore());
@@ -171,14 +156,14 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
         boolean done = false;
 
         while (!done) {
-            MultipleInputDialog dialog = new MultipleInputDialog(getShell(), "Connection Editor");
+            MultipleInputDialog dialog = new MultipleInputDialog(getShell(), PreferenceConstans.EDIT_CONNECTION);
             dialog.addTextField(WINDCHILL_HOST_LABEL, IInternalWIDECoreConstants.EMPTY_STRING, false);
             dialog.addTextField(HOST_USER_LABEL, IInternalWIDECoreConstants.EMPTY_STRING, false);
             dialog.addTextField(HOST_PASSWORD_LABEL, IInternalWIDECoreConstants.EMPTY_STRING, false);
-            dialog.addComboxField(WINDCHILL_HOST_OS, IInternalWIDECoreConstants.EMPTY_STRING, false, systemTypeItems);
+            dialog.addComboxField(WINDCHILL_HOST_OS, IInternalWIDECoreConstants.EMPTY_STRING, false, WIDEPreferences.systemTypeItems);
             dialog.addTextField(WINDCHILL_ADMIN, IInternalWIDECoreConstants.EMPTY_STRING, false);
             dialog.addTextField(WINDCHILL_ADMIN_PASSWORD, IInternalWIDECoreConstants.EMPTY_STRING, false);
-            dialog.addComboxField(WINDCHILL_VERSION, IInternalWIDECoreConstants.EMPTY_STRING, false, windchillVersionItems);
+            dialog.addComboxField(WINDCHILL_VERSION, IInternalWIDECoreConstants.EMPTY_STRING, false, WIDEPreferences.windchillVersionItems);
             dialog.addTextField(HTTP_SERVER_HOME, IInternalWIDECoreConstants.EMPTY_STRING, false);
             dialog.addTextField(WINDCHILL_HOME, IInternalWIDECoreConstants.EMPTY_STRING, false);
             dialog.addTextField(WINDCHILLDS_HOME, IInternalWIDECoreConstants.EMPTY_STRING, false);
@@ -312,7 +297,7 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
         gridData = new GridData(GridData.FILL_BOTH);
         variableTable.getControl().setLayoutData(gridData);
         variableTable.setContentProvider(variableContentProvider);
-        variableTable.setColumnProperties(variableTableColumnProperties);
+        variableTable.setColumnProperties(WIDEPreferences.variableTableColumnProperties);
         variableTable.addFilter(new VariableFilter());
         variableTable.setComparator(new ViewerComparator() {
             @Override
@@ -325,8 +310,7 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
 
                     int hostFlag = StringUtils.trimToEmpty(((VariableWrapper) e1).getfWindchillHost()).compareToIgnoreCase(StringUtils.trimToEmpty(((VariableWrapper) e2).getfWindchillHost()));
                     int hostOSFlag = StringUtils.trimToEmpty(((VariableWrapper) e1).getfWindchillHostOS()).compareToIgnoreCase(StringUtils.trimToEmpty(((VariableWrapper) e2).getfWindchillHostOS()));
-                    int versionFlag = StringUtils.trimToEmpty(((VariableWrapper) e1).getfWindchillVersion())
-                            .compareToIgnoreCase(StringUtils.trimToEmpty(((VariableWrapper) e2).getfWindchillVersion()));
+                    int versionFlag = StringUtils.trimToEmpty(((VariableWrapper) e1).getfWindchillVersion()).compareToIgnoreCase(StringUtils.trimToEmpty(((VariableWrapper) e2).getfWindchillVersion()));
 
                     return hostFlag + hostOSFlag + versionFlag;
                 }
@@ -348,6 +332,7 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
                 }
             }
         });
+        
         variableTable.getTable().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent event) {
@@ -356,11 +341,11 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
                 }
             }
         });
-
-        for (int i = 0; i < variableTableColumnHeaders.length; i++) {
+        
+        for (int i = 0; i < WIDEPreferences.variableTableColumnHeaders.length; i++) {
             TableColumn tc = new TableColumn(table, SWT.NONE, i);
-            tc.setResizable(variableTableColumnLayouts[i].resizable);
-            tc.setText(variableTableColumnHeaders[i]);
+            tc.setResizable(WIDEPreferences.variableTableColumnLayouts[i].resizable);
+            tc.setText(WIDEPreferences.variableTableColumnHeaders[i]);
         }
 
         // Try restoring column widths from preferences, if widths aren't stored, init
@@ -375,8 +360,8 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
 
     private void restoreDefaultColumnWidths() {
         TableLayout layout = new TableLayout();
-        for (int i = 0; i < variableTableColumnLayouts.length; i++) {
-            layout.addColumnData(variableTableColumnLayouts[i]);
+        for (int i = 0; i < WIDEPreferences.variableTableColumnLayouts.length; i++) {
+            layout.addColumnData(WIDEPreferences.variableTableColumnLayouts[i]);
         }
         variableTable.getTable().setLayout(layout);
     }
@@ -444,13 +429,13 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
         String windchillHome = variable.getfWindchillHome();
         String windchillDSHome = variable.getfWindchillDSHome();
 
-        MultipleInputDialog dialog = new MultipleInputDialog(getShell(), MessageFormat.format("Edit Variable:", new Object[] { windchillHost }));
+        MultipleInputDialog dialog = new MultipleInputDialog(getShell(), MessageFormat.format(PreferenceConstans.EDIT_VARIABLE, new Object[] { windchillHost }));
         dialog.addTextField(HOST_USER_LABEL, IInternalWIDECoreConstants.EMPTY_STRING, false);
         dialog.addTextField(HOST_PASSWORD_LABEL, IInternalWIDECoreConstants.EMPTY_STRING, false);
-        dialog.addComboxField(WINDCHILL_HOST_OS, IInternalWIDECoreConstants.EMPTY_STRING, false, systemTypeItems);
+        dialog.addComboxField(WINDCHILL_HOST_OS, IInternalWIDECoreConstants.EMPTY_STRING, false, WIDEPreferences.systemTypeItems);
         dialog.addTextField(WINDCHILL_ADMIN, IInternalWIDECoreConstants.EMPTY_STRING, false);
         dialog.addTextField(WINDCHILL_ADMIN_PASSWORD, IInternalWIDECoreConstants.EMPTY_STRING, false);
-        dialog.addComboxField(WINDCHILL_VERSION, IInternalWIDECoreConstants.EMPTY_STRING, false, windchillVersionItems);
+        dialog.addComboxField(WINDCHILL_VERSION, IInternalWIDECoreConstants.EMPTY_STRING, false, WIDEPreferences.windchillVersionItems);
         dialog.addTextField(HTTP_SERVER_HOME, IInternalWIDECoreConstants.EMPTY_STRING, false);
         dialog.addTextField(WINDCHILL_HOME, IInternalWIDECoreConstants.EMPTY_STRING, false);
         dialog.addTextField(WINDCHILLDS_HOME, IInternalWIDECoreConstants.EMPTY_STRING, false);

@@ -7,7 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.wide.preferences.bean.HostConfigurationBean;
+import com.wide.preferences.bean.HostConfigurationSettings;
 
 public class GsonTest {
 
@@ -30,7 +30,7 @@ public class GsonTest {
 
         for (int i = 0; i < 9; i++) {
 
-            HostConfigurationBean bean = new HostConfigurationBean(windchillHost, hostUser, hostUserPassword, windchillHostOS, windchillAdmin, windchillAdminPassword, windchillVersion, httpServerHome,
+            HostConfigurationSettings bean = new HostConfigurationSettings(windchillHost, hostUser, hostUserPassword, windchillHostOS, windchillAdmin, windchillAdminPassword, windchillVersion, httpServerHome,
                     windchillHome, windchillDSHome);
             jsonArray.add(gson.toJson(bean));
 
@@ -53,7 +53,7 @@ public class GsonTest {
 
                 String string = primitive.getAsString();
 
-                HostConfigurationBean bean = gson.fromJson(string, HostConfigurationBean.class);
+                HostConfigurationSettings bean = gson.fromJson(string, HostConfigurationSettings.class);
 
             }
 
