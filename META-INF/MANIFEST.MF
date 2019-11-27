@@ -13,6 +13,7 @@ Require-Bundle: org.eclipse.core.resources,
  com.google.guava;bundle-version="21.0.0",
  org.eclipse.core.variables;bundle-version="3.4.300",
  org.eclipse.ui.forms;bundle-version="3.7.400",
- org.apache.commons.lang;bundle-version="2.6.0"
+ org.apache.commons.lang;bundle-version="2.6.0",
+ org.apache.commons.lang3;bundle-version="3.9.0"
 Automatic-Module-Name: WIDE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

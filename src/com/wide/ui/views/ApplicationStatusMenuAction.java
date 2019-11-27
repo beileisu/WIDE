@@ -10,6 +10,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import com.wide.ui.preferences.bean.HostConfigurationSettings.SettingApplication;
+import com.wide.ui.views.constans.ApplicationStatusViewConstans;
+import com.wide.ui.views.util.ApplicationStatusUtil;
 
 public class ApplicationStatusMenuAction extends Action {
 
@@ -49,7 +51,20 @@ public class ApplicationStatusMenuAction extends Action {
 
     @Override
     public void run() {
-        System.out.println(getApplication());
+        switch (getText()) {
+        case ApplicationStatusViewConstans.MENU_START:
+            ApplicationStatusUtil.menuStartOperation(getApplication());
+            break;
+        case ApplicationStatusViewConstans.MENU_RESTART:
+            ApplicationStatusUtil.menuReStartOperation(getApplication());
+            break;
+        case ApplicationStatusViewConstans.MENU_STOP:
+            ApplicationStatusUtil.menuStopOperation(getApplication());
+            break;
+        default:
+            System.out.println("Do Nothing");
+            break;
+        }
     }
 
 }
