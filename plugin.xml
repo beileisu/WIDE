@@ -19,7 +19,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="com.wide.preferences.WIDERootPreferencePage"
+            class="com.wide.ui.preferences.WIDERootPreferencePage"
             id="com.wide.preferences.WIDERootPreferencePage"
             name="WIDE">
       </page>

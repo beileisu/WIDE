@@ -70,22 +70,9 @@ public class ApplicationStatusTreeLabelProvider extends ColumnLabelProvider {
             }
             break;
         case ApplicationStatusViewConstans.TREE_COLUMN_STATE:
-            if (element instanceof HostConfigurationSettings) {
-                HostConfigurationSettings setting = (HostConfigurationSettings) element;
-
-                switch (setting.getWindchillHostOS()) {
-                case WIDEPreferencesConstans.SYSTEM_OS_WINDOWS:
-                    imagePath = ApplicationIconsConstans.ICON_OS_WINDOWS_PNG;
-                    break;
-                case WIDEPreferencesConstans.SYSTEM_OS_LINUX:
-                    imagePath = ApplicationIconsConstans.ICON_OS_LINUX_PNG;
-                    break;
-                }
-            }
             if (element instanceof SettingApplication) {
 
                 SettingApplication setting = (SettingApplication) element;
-
                 switch (setting.getApplication()) {
                 case WIDEPreferencesConstans.APPLICATION_TYPE_APACHE:
                     imagePath = ApplicationIconsConstans.ICON_STATUS_GREEN_PNG;
@@ -98,8 +85,6 @@ public class ApplicationStatusTreeLabelProvider extends ColumnLabelProvider {
             break;
         }
         
-        
-
         if (StringUtils.isNotEmpty(imagePath)) {
             Bundle bundle = FrameworkUtil.getBundle(ApplicationStatusView.class);
             URL url = FileLocator.find(bundle, new Path(imagePath));
