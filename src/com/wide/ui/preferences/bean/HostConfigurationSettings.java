@@ -1,9 +1,9 @@
-package com.wide.preferences.bean;
+package com.wide.ui.preferences.bean;
 
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.wide.preferences.constans.PreferenceConstans;
+import com.wide.ui.preferences.constans.WIDEPreferencesConstans;
 
 public class HostConfigurationSettings {
 
@@ -37,23 +37,23 @@ public class HostConfigurationSettings {
         this.windchillDSHome = windchillDSHome;
         
         SettingApplication httpServer = new SettingApplication();
-        httpServer.setName(PreferenceConstans.APPLICATION_HTTP_SERVER);
+        httpServer.setName(WIDEPreferencesConstans.APPLICATION_HTTP_SERVER);
         httpServer.setHomePath(httpServerHome);
-        httpServer.setApplication(PreferenceConstans.APPLICATION_TYPE_APACHE);
+        httpServer.setApplication(WIDEPreferencesConstans.APPLICATION_TYPE_APACHE);
         httpServer.setHostIp(windchillHost);
         children.add(httpServer);
         
         SettingApplication windchill = new SettingApplication();
-        windchill.setName(PreferenceConstans.APPLICATION_WINDCHILL_METHOD_SERVER);
+        windchill.setName(WIDEPreferencesConstans.APPLICATION_WINDCHILL_METHOD_SERVER);
         windchill.setHomePath(windchillHome);
-        windchill.setApplication(PreferenceConstans.APPLICATION_TYPE_WINDCHILL);
+        windchill.setApplication(WIDEPreferencesConstans.APPLICATION_TYPE_WINDCHILL);
         windchill.setHostIp(windchillHost);
         children.add(windchill);
         
         SettingApplication windchillDS = new SettingApplication();
-        windchillDS.setName(PreferenceConstans.APPLICATION_WINDCHILLDS);
+        windchillDS.setName(WIDEPreferencesConstans.APPLICATION_WINDCHILLDS);
         windchillDS.setHomePath(windchillDSHome);
-        windchillDS.setApplication(PreferenceConstans.APPLICATION_TYPE_WINDCHILL);
+        windchillDS.setApplication(WIDEPreferencesConstans.APPLICATION_TYPE_WINDCHILL);
         windchillDS.setHostIp(windchillHost);
         children.add(windchillDS);
         

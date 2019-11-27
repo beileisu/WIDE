@@ -1,4 +1,4 @@
-package com.wide.views;
+package com.wide.ui.views;
 
 import java.util.List;
 
@@ -25,12 +25,12 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.ViewPart;
 
-import com.wide.preferences.WIDEPreferences;
-import com.wide.preferences.bean.HostConfigurationSettings;
-import com.wide.preferences.bean.HostConfigurationSettings.SettingApplication;
 import com.wide.ui.WIDEUIPlugin;
-import com.wide.views.constans.ApplicationIconsConstans;
-import com.wide.views.constans.ApplicationStatusViewConstans;
+import com.wide.ui.preferences.WIDEPreferences;
+import com.wide.ui.preferences.bean.HostConfigurationSettings;
+import com.wide.ui.preferences.bean.HostConfigurationSettings.SettingApplication;
+import com.wide.ui.views.constans.ApplicationIconsConstans;
+import com.wide.ui.views.constans.ApplicationStatusViewConstans;
 
 public class ApplicationStatusView extends ViewPart {
 

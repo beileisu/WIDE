@@ -1,4 +1,4 @@
-package com.wide.views;
+package com.wide.ui.views;
 
 import java.net.URL;
 
@@ -9,7 +9,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
-import com.wide.preferences.bean.HostConfigurationSettings.SettingApplication;
+import com.wide.ui.preferences.bean.HostConfigurationSettings.SettingApplication;
 
 public class ApplicationStatusMenuAction extends Action {
 

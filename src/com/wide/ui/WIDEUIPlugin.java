@@ -10,7 +10,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
-import com.wide.constants.WIDEUIConstants;
+import com.wide.ui.constants.WIDEUIConstants;
 
 public class WIDEUIPlugin extends AbstractUIPlugin {
 

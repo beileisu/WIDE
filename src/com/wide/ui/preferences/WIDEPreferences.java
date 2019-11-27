@@ -1,4 +1,4 @@
-package com.wide.preferences;
+package com.wide.ui.preferences;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -17,8 +17,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.wide.preferences.bean.HostConfigurationSettings;
-import com.wide.preferences.constans.PreferenceConstans;
+import com.wide.ui.preferences.bean.HostConfigurationSettings;
+import com.wide.ui.preferences.constans.WIDEPreferencesConstans;
 
 @SuppressWarnings({ "rawtypes" })
 public final class WIDEPreferences {
@@ -28,9 +28,9 @@ public final class WIDEPreferences {
     protected static final Gson GSON = new Gson();
     
     protected static final String[] variableTableColumnHeaders = { 
-            PreferenceConstans.CONFIG_HOST_NAME, 
-            PreferenceConstans.CONFIG_WINDCHILL_VERSION, 
-            PreferenceConstans.CONFIG_HOST_OS 
+            WIDEPreferencesConstans.CONFIG_HOST_NAME, 
+            WIDEPreferencesConstans.CONFIG_WINDCHILL_VERSION, 
+            WIDEPreferencesConstans.CONFIG_HOST_OS 
     };
 
     protected static final ColumnLayoutData[] variableTableColumnLayouts = { 
@@ -45,14 +45,14 @@ public final class WIDEPreferences {
     };
 
     protected static final String[] HOST_OS_ITEMS = { 
-            PreferenceConstans.SYSTEM_OS_WINDOWS, 
-            PreferenceConstans.SYSTEM_OS_LINUX 
+            WIDEPreferencesConstans.SYSTEM_OS_WINDOWS, 
+            WIDEPreferencesConstans.SYSTEM_OS_LINUX 
     };
 
     protected static final String[] variableTableColumnProperties = { 
-            PreferenceConstans.CONFIG_HOST_NAME, 
-            PreferenceConstans.CONFIG_WINDCHILL_VERSION, 
-            PreferenceConstans.CONFIG_HOST_OS 
+            WIDEPreferencesConstans.CONFIG_HOST_NAME, 
+            WIDEPreferencesConstans.CONFIG_WINDCHILL_VERSION, 
+            WIDEPreferencesConstans.CONFIG_HOST_OS 
     };
     
     public static List<HostConfigurationSettings> getHostConfigurationSettings(IPreferenceStore store) {

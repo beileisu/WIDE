@@ -12,7 +12,7 @@
             id="wide.wizards.SampleNewWizard"
             name="Multi-page Editor file"
             icon="icons/sample.png"
-            class="com.wide.wizards.SampleNewWizard"
+            class="com.wide.ui.wizards.SampleNewWizard"
             category="WIDE">
       </wizard>
    </extension>
@@ -25,7 +25,7 @@
       </page>
       <page
             category="com.wide.preferences.WIDERootPreferencePage"
-            class="com.wide.preferences.WIDEHostConfigurationPreferencePage"
+            class="com.wide.ui.preferences.WIDEHostConfigurationPreferencePage"
             id="com.wide.preferences.WIDEHostConfigurationPreferencePage"
             name="Host Configuration">
       </page>
@@ -33,7 +33,7 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="com.wide.preferences.PreferenceInitializer">
+            class="com.wide.ui.preferences.PreferenceInitializer">
       </initializer>
    </extension>
    <extension
@@ -44,7 +44,7 @@
       </category>
       <view
             category="WIDE"
-            class="com.wide.views.ApplicationStatusView"
+            class="com.wide.ui.views.ApplicationStatusView"
             icon="icons/server.png"
             id="com.wide.views.ApplicationStatusView"
             name="Application Status"

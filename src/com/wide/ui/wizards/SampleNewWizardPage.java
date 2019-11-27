@@ -1,4 +1,4 @@
-package com.wide.wizards;
+package com.wide.ui.wizards;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;

@@ -1,4 +1,4 @@
-package com.wide.util;
+package com.wide.ui.util;
 
 import java.util.Map;
 

@@ -1,6 +1,6 @@
-package com.wide.preferences.constans;
+package com.wide.ui.preferences.constans;
 
-public class PreferenceConstans {
+public class WIDEPreferencesConstans {
 
 	public static final String HOST_CONFIGURATION = "Host Configuration";
 	public static final String CONFIG_HOST_NAME = "Windchill Host";

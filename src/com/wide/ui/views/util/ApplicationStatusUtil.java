@@ -1,7 +1,7 @@
-package com.wide.views.util;
+package com.wide.ui.views.util;
 
-import com.wide.preferences.bean.HostConfigurationSettings;
-import com.wide.preferences.bean.HostConfigurationSettings.SettingApplication;
+import com.wide.ui.preferences.bean.HostConfigurationSettings;
+import com.wide.ui.preferences.bean.HostConfigurationSettings.SettingApplication;
 
 public class ApplicationStatusUtil {
 

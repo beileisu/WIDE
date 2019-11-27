@@ -27,11 +27,11 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
-import com.wide.constants.WIDEUIConstants;
 import com.wide.internal.core.IInternalWIDECoreConstants;
 import com.wide.internal.ui.SWTFactory;
 import com.wide.internal.ui.StringVariableLabelProvider;
-import com.wide.preferences.WIDEHostConfigurationPreferencePage;
+import com.wide.ui.constants.WIDEUIConstants;
+import com.wide.ui.preferences.WIDEHostConfigurationPreferencePage;
 
 /**
  * A dialog that prompts the user to choose and configure a string

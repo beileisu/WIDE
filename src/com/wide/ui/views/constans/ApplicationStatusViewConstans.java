@@ -1,4 +1,4 @@
-package com.wide.views.constans;
+package com.wide.ui.views.constans;
 
 public class ApplicationStatusViewConstans {
 

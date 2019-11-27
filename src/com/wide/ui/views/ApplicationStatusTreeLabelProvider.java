@@ -1,4 +1,4 @@
-package com.wide.views;
+package com.wide.ui.views;
 
 import java.net.URL;
 
@@ -13,11 +13,11 @@ import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
-import com.wide.preferences.bean.HostConfigurationSettings;
-import com.wide.preferences.bean.HostConfigurationSettings.SettingApplication;
-import com.wide.preferences.constans.PreferenceConstans;
-import com.wide.views.constans.ApplicationIconsConstans;
-import com.wide.views.constans.ApplicationStatusViewConstans;
+import com.wide.ui.preferences.bean.HostConfigurationSettings;
+import com.wide.ui.preferences.bean.HostConfigurationSettings.SettingApplication;
+import com.wide.ui.preferences.constans.WIDEPreferencesConstans;
+import com.wide.ui.views.constans.ApplicationIconsConstans;
+import com.wide.ui.views.constans.ApplicationStatusViewConstans;
 
 public class ApplicationStatusTreeLabelProvider extends ColumnLabelProvider {
 
@@ -47,10 +47,10 @@ public class ApplicationStatusTreeLabelProvider extends ColumnLabelProvider {
                 HostConfigurationSettings setting = (HostConfigurationSettings) element;
 
                 switch (setting.getWindchillHostOS()) {
-                case PreferenceConstans.SYSTEM_OS_WINDOWS:
+                case WIDEPreferencesConstans.SYSTEM_OS_WINDOWS:
                     imagePath = ApplicationIconsConstans.ICON_OS_WINDOWS_PNG;
                     break;
-                case PreferenceConstans.SYSTEM_OS_LINUX:
+                case WIDEPreferencesConstans.SYSTEM_OS_LINUX:
                     imagePath = ApplicationIconsConstans.ICON_OS_LINUX_PNG;
                     break;
                 }
@@ -60,10 +60,10 @@ public class ApplicationStatusTreeLabelProvider extends ColumnLabelProvider {
                 SettingApplication setting = (SettingApplication) element;
 
                 switch (setting.getApplication()) {
-                case PreferenceConstans.APPLICATION_TYPE_APACHE:
+                case WIDEPreferencesConstans.APPLICATION_TYPE_APACHE:
                     imagePath = ApplicationIconsConstans.ICON_HTTPD_PNG;
                     break;
-                case PreferenceConstans.APPLICATION_TYPE_WINDCHILL:
+                case WIDEPreferencesConstans.APPLICATION_TYPE_WINDCHILL:
                     imagePath = ApplicationIconsConstans.ICON_WINDCHILL_PNG;
                     break;
                 }
@@ -74,10 +74,10 @@ public class ApplicationStatusTreeLabelProvider extends ColumnLabelProvider {
                 HostConfigurationSettings setting = (HostConfigurationSettings) element;
 
                 switch (setting.getWindchillHostOS()) {
-                case PreferenceConstans.SYSTEM_OS_WINDOWS:
+                case WIDEPreferencesConstans.SYSTEM_OS_WINDOWS:
                     imagePath = ApplicationIconsConstans.ICON_OS_WINDOWS_PNG;
                     break;
-                case PreferenceConstans.SYSTEM_OS_LINUX:
+                case WIDEPreferencesConstans.SYSTEM_OS_LINUX:
                     imagePath = ApplicationIconsConstans.ICON_OS_LINUX_PNG;
                     break;
                 }
@@ -87,10 +87,10 @@ public class ApplicationStatusTreeLabelProvider extends ColumnLabelProvider {
                 SettingApplication setting = (SettingApplication) element;
 
                 switch (setting.getApplication()) {
-                case PreferenceConstans.APPLICATION_TYPE_APACHE:
+                case WIDEPreferencesConstans.APPLICATION_TYPE_APACHE:
                     imagePath = ApplicationIconsConstans.ICON_STATUS_GREEN_PNG;
                     break;
-                case PreferenceConstans.APPLICATION_TYPE_WINDCHILL:
+                case WIDEPreferencesConstans.APPLICATION_TYPE_WINDCHILL:
                     imagePath = ApplicationIconsConstans.ICON_STATUS_RED_PNG;
                     break;
                 }

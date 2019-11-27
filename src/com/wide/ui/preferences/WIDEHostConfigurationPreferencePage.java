@@ -1,4 +1,4 @@
-package com.wide.preferences;
+package com.wide.ui.preferences;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -40,9 +40,9 @@ import org.eclipse.ui.internal.WorkbenchPlugin;
 import com.wide.internal.core.IInternalWIDECoreConstants;
 import com.wide.internal.ui.MultipleInputDialog;
 import com.wide.internal.ui.SWTFactory;
-import com.wide.preferences.bean.HostConfigurationSettings;
-import com.wide.preferences.constans.PreferenceConstans;
 import com.wide.ui.WIDEUIPlugin;
+import com.wide.ui.preferences.bean.HostConfigurationSettings;
+import com.wide.ui.preferences.constans.WIDEPreferencesConstans;
 
 @SuppressWarnings({ "restriction", "unchecked" })
 public class WIDEHostConfigurationPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
@@ -143,7 +143,7 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
         boolean done = false;
 
         while (!done) {
-            MultipleInputDialog dialog = new MultipleInputDialog(getShell(), PreferenceConstans.NEW_CONNECTION);
+            MultipleInputDialog dialog = new MultipleInputDialog(getShell(), WIDEPreferencesConstans.NEW_CONNECTION);
             dialog.addTextField(WINDCHILL_HOST_LABEL, IInternalWIDECoreConstants.EMPTY_STRING, false);
             dialog.addTextField(HOST_USER_LABEL, IInternalWIDECoreConstants.EMPTY_STRING, false);
             dialog.addTextField(HOST_PASSWORD_LABEL, IInternalWIDECoreConstants.EMPTY_STRING, false);
@@ -315,7 +315,7 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
         String windchillHome = setting.getWindchillHome();
         String windchillDSHome = setting.getWindchillDSHome();
 
-        MultipleInputDialog dialog = new MultipleInputDialog(getShell(), MessageFormat.format(PreferenceConstans.EDIT_CONNECTION, new Object[] { windchillHost }));
+        MultipleInputDialog dialog = new MultipleInputDialog(getShell(), MessageFormat.format(WIDEPreferencesConstans.EDIT_CONNECTION, new Object[] { windchillHost }));
         dialog.addTextField(HOST_USER_LABEL, hostUser, false);
         dialog.addTextField(HOST_PASSWORD_LABEL, hostUserPassword, false);
         dialog.addComboxField(WINDCHILL_HOST_OS, windchillHostOS, false, WIDEPreferences.HOST_OS_ITEMS);

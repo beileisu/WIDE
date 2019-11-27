@@ -1,4 +1,4 @@
-package com.wide.constants;
+package com.wide.ui.constants;
 
 public interface WIDEUIConstants {
 
