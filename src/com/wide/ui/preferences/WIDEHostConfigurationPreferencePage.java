@@ -169,7 +169,7 @@ public class WIDEHostConfigurationPreferencePage extends PreferencePage implemen
                 String windchillHome = StringUtils.trimToEmpty(dialog.getStringValue(WINDCHILL_HOME));
                 String windchillDSHome = StringUtils.trimToEmpty(dialog.getStringValue(WINDCHILLDS_HOME));
 
-                HostConfigurationSettings setting = new HostConfigurationSettings(windchillHost, hostUser, hostUserPassword, windchillHostOS, windchillAdmin, windchillAdminPassword, windchillVersion, httpServerHome,
+                HostConfigurationSettings setting = HostConfigurationSettings.getInstence(windchillHost, hostUser, hostUserPassword, windchillHostOS, windchillAdmin, windchillAdminPassword, windchillVersion, httpServerHome,
                         windchillHome, windchillDSHome);
 
                 done = addHostConfigurationSettings(setting);

@@ -95,7 +95,7 @@ public class ApplicationStatusView extends ViewPart {
         contextMenu.addMenuListener(new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager mgr) {
-                fillContextMenu(mgr, application);
+                fillContextMenu(viewer.getControl().getParent(), mgr, application);
             }
         });
 
@@ -108,22 +108,22 @@ public class ApplicationStatusView extends ViewPart {
      *
      * @param contextMenu
      */
-    protected void fillContextMenu(IMenuManager contextMenu, SettingApplication application) {
+    protected void fillContextMenu(Composite parent, IMenuManager contextMenu, SettingApplication application) {
         contextMenu.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
         contextMenu.add(new ApplicationStatusMenuAction(
                 ApplicationStatusViewConstans.MENU_START,
                 ApplicationIconsConstans.ICON_START_GIF,
-                application));
+                application, parent));
         
         contextMenu.add(new ApplicationStatusMenuAction(
                 ApplicationStatusViewConstans.MENU_RESTART,
                 ApplicationIconsConstans.ICON_RESTART_PNG,
-                application));
+                application, parent));
         
         contextMenu.add(new ApplicationStatusMenuAction(
                 ApplicationStatusViewConstans.MENU_STOP,
                 ApplicationIconsConstans.ICON_STOP_GIF,
-                application));
+                application, parent));
         
     }
     

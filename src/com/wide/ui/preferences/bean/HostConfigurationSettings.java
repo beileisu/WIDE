@@ -20,9 +20,41 @@ public class HostConfigurationSettings {
 
     private List<SettingApplication> children = Lists.newArrayList();
     
-    public HostConfigurationSettings() {
+    public static HostConfigurationSettings getInstence(String windchillHost, String hostUser, String hostUserPassword, String windchillHostOS, String windchillAdmin, String windchillAdminPassword, String windchillVersion,
+            String httpServerHome, String windchillHome, String windchillDSHome) {
+        HostConfigurationSettings configuration = new HostConfigurationSettings(windchillHost, hostUser, hostUserPassword, windchillHostOS, windchillAdmin, windchillAdminPassword, windchillVersion, httpServerHome, windchillHome, windchillDSHome);
+        
+        List<SettingApplication> configurationChildren = Lists.newArrayList();
+        
+        SettingApplication httpServer = SettingApplication.newSettingApplication();
+        httpServer.setName(WIDEPreferencesConstans.APPLICATION_HTTP_SERVER);
+        httpServer.setApplication(WIDEPreferencesConstans.APPLICATION_TYPE_APACHE);
+        httpServer.setHomePath(httpServerHome);
+        httpServer.setHostIp(windchillHost);
+        httpServer.setHostOS(windchillHostOS);
+        configurationChildren.add(httpServer);
+        
+        SettingApplication windchill = SettingApplication.newSettingApplication();
+        windchill.setName(WIDEPreferencesConstans.APPLICATION_WINDCHILL_METHOD_SERVER);
+        windchill.setApplication(WIDEPreferencesConstans.APPLICATION_TYPE_WINDCHILL);
+        windchill.setHomePath(windchillHome);
+        windchill.setHostIp(windchillHost);
+        windchill.setHostOS(windchillHostOS);
+        configurationChildren.add(windchill);
+        
+        SettingApplication windchillDS = SettingApplication.newSettingApplication();
+        windchillDS.setName(WIDEPreferencesConstans.APPLICATION_WINDCHILLDS);
+        windchillDS.setApplication(WIDEPreferencesConstans.APPLICATION_TYPE_WINDCHILL);
+        windchillDS.setHomePath(windchillDSHome);
+        windchillDS.setHostIp(windchillHost);
+        windchillDS.setHostOS(windchillHostOS);
+        configurationChildren.add(windchillDS);
+        
+        configuration.setChildren(configurationChildren);
+        
+        return configuration;
     }
-
+    
     public HostConfigurationSettings(String windchillHost, String hostUser, String hostUserPassword, String windchillHostOS, String windchillAdmin, String windchillAdminPassword, String windchillVersion,
             String httpServerHome, String windchillHome, String windchillDSHome) {
         this.windchillHost = windchillHost;
@@ -35,28 +67,6 @@ public class HostConfigurationSettings {
         this.httpServerHome = httpServerHome;
         this.windchillHome = windchillHome;
         this.windchillDSHome = windchillDSHome;
-        
-        SettingApplication httpServer = new SettingApplication();
-        httpServer.setName(WIDEPreferencesConstans.APPLICATION_HTTP_SERVER);
-        httpServer.setHomePath(httpServerHome);
-        httpServer.setApplication(WIDEPreferencesConstans.APPLICATION_TYPE_APACHE);
-        httpServer.setHostIp(windchillHost);
-        children.add(httpServer);
-        
-        SettingApplication windchill = new SettingApplication();
-        windchill.setName(WIDEPreferencesConstans.APPLICATION_WINDCHILL_METHOD_SERVER);
-        windchill.setHomePath(windchillHome);
-        windchill.setApplication(WIDEPreferencesConstans.APPLICATION_TYPE_WINDCHILL);
-        windchill.setHostIp(windchillHost);
-        children.add(windchill);
-        
-        SettingApplication windchillDS = new SettingApplication();
-        windchillDS.setName(WIDEPreferencesConstans.APPLICATION_WINDCHILLDS);
-        windchillDS.setHomePath(windchillDSHome);
-        windchillDS.setApplication(WIDEPreferencesConstans.APPLICATION_TYPE_WINDCHILL);
-        windchillDS.setHostIp(windchillHost);
-        children.add(windchillDS);
-        
     }
 
     public String getWindchillHost() {
@@ -189,20 +199,28 @@ public class HostConfigurationSettings {
         return "HostConfigurationBean [windchillHost=" + windchillHost + ", windchillHostOS=" + windchillHostOS + ", windchillVersion=" + windchillVersion + "]";
     }
 
-    public class SettingApplication{
+    public static class SettingApplication{
         
         private String name;
         private String homePath;
         private String application;
-
+        private String hostOS;
         private String hostIp;
         
-        public SettingApplication() {
+        private SettingApplication() {
         }
 
-        public SettingApplication(String name, String homePath) {
-            this.name = name;
-            this.homePath = homePath;
+        public static SettingApplication newSettingApplication() {
+            SettingApplication application = new SettingApplication();
+            return application;
+        }
+        
+        public String getHostOS() {
+            return hostOS;
+        }
+
+        public void setHostOS(String hostOS) {
+            this.hostOS = hostOS;
         }
 
         public String getName() {

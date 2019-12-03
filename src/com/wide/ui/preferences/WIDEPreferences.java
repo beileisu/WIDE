@@ -3,6 +3,7 @@ package com.wide.ui.preferences;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -17,7 +18,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.wide.ui.WIDEUIPlugin;
 import com.wide.ui.preferences.bean.HostConfigurationSettings;
+import com.wide.ui.preferences.bean.HostConfigurationSettings.SettingApplication;
 import com.wide.ui.preferences.constans.WIDEPreferencesConstans;
 
 @SuppressWarnings({ "rawtypes" })
@@ -54,6 +57,24 @@ public final class WIDEPreferences {
             WIDEPreferencesConstans.CONFIG_WINDCHILL_VERSION, 
             WIDEPreferencesConstans.CONFIG_HOST_OS 
     };
+    
+    public static HostConfigurationSettings queryHostConfigurationSettings(SettingApplication application) {
+        
+        HostConfigurationSettings configuration = null;
+        
+        IPreferenceStore store = WIDEUIPlugin.getDefault().getPreferenceStore();
+        List<HostConfigurationSettings> settings = getHostConfigurationSettings(store);
+        
+        Optional<HostConfigurationSettings> optional = settings.stream().filter(item->{
+            return StringUtils.equals(item.getWindchillHost(), application.getHostIp());
+        }).findFirst();
+        
+        if(optional != null) {
+            configuration = optional.get();
+        }
+        
+        return configuration;
+    }
     
     public static List<HostConfigurationSettings> getHostConfigurationSettings(IPreferenceStore store) {
 

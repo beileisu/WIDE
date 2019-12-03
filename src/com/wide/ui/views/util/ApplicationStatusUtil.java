@@ -112,17 +112,15 @@ public class ApplicationStatusUtil {
     public static void doStartOperation(SettingApplication application) {
         System.out.println("Start : " + application.getName());
         
-        String hostname = application.getHostIp();
-        
         switch (application.getName()) {
         case WIDEPreferencesConstans.APPLICATION_HTTP_SERVER:
-            
+            SSHCommandsUtil.startHTTPServer(application);
             break;
         case WIDEPreferencesConstans.APPLICATION_WINDCHILL_METHOD_SERVER:
-            
+            SSHCommandsUtil.startWindchill(application);
             break;
         case WIDEPreferencesConstans.APPLICATION_WINDCHILLDS:
-            
+            SSHCommandsUtil.startWindchillDS(application);
             break;
         default:
             break;
@@ -131,18 +129,17 @@ public class ApplicationStatusUtil {
     }
     
     public static void doReStartOperation(SettingApplication application) {
-        
-        String hostname = application.getHostIp();
+        System.out.println("ReStart : " + application.getName());
         
         switch (application.getName()) {
         case WIDEPreferencesConstans.APPLICATION_HTTP_SERVER:
-            
+            SSHCommandsUtil.reStartHTTPServer(application);
             break;
         case WIDEPreferencesConstans.APPLICATION_WINDCHILL_METHOD_SERVER:
-            
+            SSHCommandsUtil.restartWindchill(application);
             break;
         case WIDEPreferencesConstans.APPLICATION_WINDCHILLDS:
-            
+            SSHCommandsUtil.reStartWindchillDS(application);
             break;
         default:
             break;
@@ -151,17 +148,17 @@ public class ApplicationStatusUtil {
     
     public static void doStopOperation(SettingApplication application) {
         
-        String hostname = application.getHostIp();
+        System.out.println("Stop : " + application.getName());
         
         switch (application.getName()) {
         case WIDEPreferencesConstans.APPLICATION_HTTP_SERVER:
-            
+            SSHCommandsUtil.stopHTTPServer(application);
             break;
         case WIDEPreferencesConstans.APPLICATION_WINDCHILL_METHOD_SERVER:
-            
+            SSHCommandsUtil.stopWindchill(application);
             break;
         case WIDEPreferencesConstans.APPLICATION_WINDCHILLDS:
-            
+            SSHCommandsUtil.stopWindchillDS(application);
             break;
         default:
             break;
